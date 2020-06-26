@@ -77,9 +77,9 @@ func (r *MongoDBRepo) GetAll(ctx context.Context) ([]*User, error) {
 }
 
 // Update a user
-func (r *MongoDBRepo) Update(ctx context.Context, user *User) error {
+func (r *MongoDBRepo) Update(ctx context.Context, id string, user *UpdateUser) error {
 	userColl := r.db.Collection(r.collName)
-	filter := bson.M{"id": user.ID}
+	filter := bson.M{"id": id}
 	_, err := userColl.ReplaceOne(ctx, filter, user)
 	if err != nil {
 		return err

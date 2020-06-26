@@ -90,13 +90,16 @@ func (d *delivery) Update(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	decoder := json.NewDecoder(r.Body)
-	user := &users.User{}
+	user := &users.UpdateUser{}
 	if err := decoder.Decode(&user); err != nil {
 		writeErr(w, err)
 		return
 	}
 
-	if err := d.usecase.Update(ctx, user); err != nil {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	if err := d.usecase.Update(ctx, id, user); err != nil {
 		writeErr(w, err)
 		return
 	}
@@ -129,8 +132,8 @@ func Routes() (*mux.Router, error) {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/users", delivery.Create).Methods("POST")
-	r.HandleFunc("/users", delivery.GetAll).Methods("GET")
 	r.HandleFunc("/users/{id}", delivery.Get).Methods("GET")
+	r.HandleFunc("/users", delivery.GetAll).Methods("GET")
 	r.HandleFunc("/users/{id}", delivery.Update).Methods("PUT")
 	r.HandleFunc("/users/{id}", delivery.Delete).Methods("DELETE")
 
