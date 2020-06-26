@@ -73,6 +73,22 @@ func (r *MongoDBRepo) Get(ctx context.Context, id string) (*User, error) {
 // GetAll users
 func (r *MongoDBRepo) GetAll(ctx context.Context) ([]*User, error) {
 	users := make([]*User, 0)
+	user := &User{}
+	userColl := r.db.Collection(r.collName)
+
+	cur, err := userColl.Find(ctx, bson.D{})
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(ctx)
+
+	for cur.Next(ctx) {
+		err := cur.Decode(&user)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
 	return users, nil
 }
 
@@ -89,6 +105,11 @@ func (r *MongoDBRepo) Update(ctx context.Context, id string, user *UpdateUser) e
 
 // Delete a user
 func (r *MongoDBRepo) Delete(ctx context.Context, id string) error {
-	// userColl := r.db.Collection(r.collName)
+	userColl := r.db.Collection(r.collName)
+	filter := bson.M{"id": id}
+	_, err := userColl.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
 	return nil
 }
