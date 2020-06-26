@@ -16,4 +16,4 @@ gomodgen:
 	./gomod.sh
 
 run-local:
-	PORT=8005 TABLE_NAME=users go run cmd/server/main.go
+	PORT=8005 DB_URI=mongodb://127.0.0.1:27017 DB_NAME=serverless TABLE_NAME=users go run cmd/server/main.go
