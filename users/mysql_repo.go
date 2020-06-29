@@ -1,9 +1,16 @@
 package users
 
 import (
+	"context"
 	"database/sql"
 	"os"
+	"time"
+
+	// Blank import mysql driver
+	_ "github.com/go-sql-driver/mysql"
 )
+
+const timeout = time.Second * 5
 
 // MysqlDBRepo implements usecase repository
 type MysqlDBRepo struct {
@@ -30,8 +37,10 @@ func mysqlConnect(dbURI, dbName string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	err = db.Ping()
-	if err != nil {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	if err := db.PingContext(ctx); err != nil {
 		return nil, err
 	}
 
