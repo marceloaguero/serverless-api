@@ -16,9 +16,9 @@ type MongoDBRepo struct {
 	collName string
 }
 
-// NewDBRepo creates the repo
-func NewDBRepo(dbURI, dbName, collName string) *MongoDBRepo {
-	db, err := dbConnect(dbURI, dbName)
+// NewMongoRepo creates the repo
+func NewMongoRepo(dbURI, dbName, collName string) *MongoDBRepo {
+	db, err := mongoConnect(dbURI, dbName)
 	if err != nil {
 		os.Exit(1)
 	}
@@ -28,7 +28,7 @@ func NewDBRepo(dbURI, dbName, collName string) *MongoDBRepo {
 	}
 }
 
-func dbConnect(dbURI, dbName string) (*mongo.Database, error) {
+func mongoConnect(dbURI, dbName string) (*mongo.Database, error) {
 	dbClient, err := mongo.NewClient(options.Client().ApplyURI(dbURI))
 	if err != nil {
 		return nil, err

@@ -21,7 +21,7 @@ func Init() (UserService, error) {
 	dbName := os.Getenv("DB_NAME")
 	tableName := os.Getenv("TABLE_NAME")
 
-	repository := NewDBRepo(dbURI, dbName, tableName)
+	repository := NewMongoRepo(dbURI, dbName, tableName)
 
 	usecase := &Usecase{Repository: repository}
 
