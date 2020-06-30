@@ -12,17 +12,9 @@ var (
 	validate *validator.Validate
 )
 
-type repository interface {
-	Create(ctx context.Context, user *User) error
-	Get(ctx context.Context, id string) (*User, error)
-	GetAll(ctx context.Context) ([]*User, error)
-	Update(ctx context.Context, id string, user *UpdateUser) error
-	Delete(ctx context.Context, id string) error
-}
-
 // Usecase for interacting with users
 type Usecase struct {
-	Repository repository
+	Repository Repository
 }
 
 func (u *Usecase) newID() string {
