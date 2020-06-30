@@ -22,7 +22,10 @@ func Init() (UserService, error) {
 	tableName := os.Getenv("TABLE_NAME")
 
 	// repository := NewMongoRepo(dbURI, dbName, tableName)
-	repository := NewMysqlRepo(dsName, dbName, tableName)
+	repository, err := NewMysqlRepo(dsName, dbName, tableName)
+	if err != nil {
+		return nil, err
+	}
 
 	usecase := &Usecase{Repository: repository}
 
