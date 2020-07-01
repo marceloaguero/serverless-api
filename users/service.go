@@ -1,26 +1,28 @@
 package users
 
 import (
+	"fmt"
 	"os"
-
-	mysqlrepo "github.com/marceloaguero/serverless-api/users/repository/mysql"
 )
 
 // Init sets up an instance of this domains
 // usecase, pre-configured with the dependencies.
 func Init() (Usecase, error) {
 	dsName := os.Getenv("DB_DSN")
-	dbName := os.Getenv("DB_NAME")
-	tableName := os.Getenv("TABLE_NAME")
+	// dbName := os.Getenv("DB_NAME")
+	// tableName := os.Getenv("TABLE_NAME")
+
+	fmt.Println(dsName)
 
 	// repository := NewMongoRepo(dbURI, dbName, tableName)
-	repository, err := mysqlrepo.NewMysqlRepo(dsName, dbName, tableName)
+	// repository, err := mysqlrepo.NewMysqlRepo(dsName, dbName, tableName)
 	// NewMysqlRepo(dsName, dbName, tableName)
-	if err != nil {
-		return nil, err
-	}
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	usecase := NewUsecase(repository)
+	// usecase := NewUsecase(repository)
 
-	return usecase, nil
+	// return usecase, nil
+	return nil, nil
 }
