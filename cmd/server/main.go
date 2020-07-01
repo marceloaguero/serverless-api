@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	transport "github.com/marceloaguero/serverless-api/users/transports/http"
+	transport "github.com/marceloaguero/serverless-api/users/transport/http"
 )
 
 func main() {

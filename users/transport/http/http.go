@@ -13,8 +13,16 @@ import (
 
 const timeout = time.Second * 5
 
+// Delivery -
 type delivery struct {
-	usecase users.UserService
+	usecase users.Usecase
+}
+
+// NewDelivery -
+func newDelivery(uc users.Usecase) *delivery {
+	return &delivery{
+		usecase: uc,
+	}
 }
 
 func writeErr(w http.ResponseWriter, err error) {
@@ -128,7 +136,7 @@ func Routes() (*mux.Router, error) {
 		log.Panic(err)
 	}
 
-	delivery := &delivery{usecase}
+	delivery := newDelivery(usecase)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/users", delivery.Create).Methods("POST")

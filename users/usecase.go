@@ -12,18 +12,33 @@ var (
 	validate *validator.Validate
 )
 
-// Usecase for interacting with users
-type Usecase struct {
-	Repository Repository
+// Usecase represents the user usecases
+type Usecase interface {
+	Create(ctx context.Context, user *User) error
+	Get(ctx context.Context, id string) (*User, error)
+	GetAll(ctx context.Context) ([]*User, error)
+	Update(ctx context.Context, id string, user *UpdateUser) error
+	Delete(ctx context.Context, id string) error
 }
 
-func (u *Usecase) newID() string {
+type usecase struct {
+	repository Repository
+}
+
+// NewUsecase creates a new usecase object to implement Usecase interface
+func NewUsecase(repo Repository) Usecase {
+	return &usecase{
+		repository: repo,
+	}
+}
+
+func (u *usecase) newID() string {
 	uid := uuid.New()
 	return uid.String()
 }
 
 // Create a single user
-func (u *Usecase) Create(ctx context.Context, user *User) error {
+func (u *usecase) Create(ctx context.Context, user *User) error {
 	validate = validator.New()
 	if err := validate.Struct(user); err != nil {
 		validationErrors := err.(validator.ValidationErrors)
@@ -31,7 +46,7 @@ func (u *Usecase) Create(ctx context.Context, user *User) error {
 	}
 
 	user.ID = u.newID()
-	if err := u.Repository.Create(ctx, user); err != nil {
+	if err := u.repository.Create(ctx, user); err != nil {
 		return errors.Wrap(err, "error creating new user")
 	}
 
@@ -39,8 +54,8 @@ func (u *Usecase) Create(ctx context.Context, user *User) error {
 }
 
 // Get a single user
-func (u *Usecase) Get(ctx context.Context, id string) (*User, error) {
-	user, err := u.Repository.Get(ctx, id)
+func (u *usecase) Get(ctx context.Context, id string) (*User, error) {
+	user, err := u.repository.Get(ctx, id)
 	if err != nil {
 		return nil, errors.Wrap(err, "error fetching a single user")
 	}
@@ -48,8 +63,8 @@ func (u *Usecase) Get(ctx context.Context, id string) (*User, error) {
 }
 
 // GetAll gets all users
-func (u *Usecase) GetAll(ctx context.Context) ([]*User, error) {
-	users, err := u.Repository.GetAll(ctx)
+func (u *usecase) GetAll(ctx context.Context) ([]*User, error) {
+	users, err := u.repository.GetAll(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "error fetching all users")
 	}
@@ -57,22 +72,22 @@ func (u *Usecase) GetAll(ctx context.Context) ([]*User, error) {
 }
 
 // Update a single user
-func (u *Usecase) Update(ctx context.Context, id string, user *UpdateUser) error {
+func (u *usecase) Update(ctx context.Context, id string, user *UpdateUser) error {
 	validate = validator.New()
 	if err := validate.Struct(user); err != nil {
 		validationErrors := err.(validator.ValidationErrors)
 		return validationErrors
 	}
 
-	if err := u.Repository.Update(ctx, id, user); err != nil {
+	if err := u.repository.Update(ctx, id, user); err != nil {
 		return errors.Wrap(err, "error updating user")
 	}
 	return nil
 }
 
 // Delete a single user
-func (u *Usecase) Delete(ctx context.Context, id string) error {
-	if err := u.Repository.Delete(ctx, id); err != nil {
+func (u *usecase) Delete(ctx context.Context, id string) error {
+	if err := u.repository.Delete(ctx, id); err != nil {
 		return errors.Wrap(err, "error deleting user")
 	}
 	return nil
