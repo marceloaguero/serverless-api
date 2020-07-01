@@ -1,4 +1,4 @@
-package users
+package mysql
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/marceloaguero/serverless-api/users"
 	// Blank import mysql driver
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -19,7 +20,7 @@ type mysqlDBRepo struct {
 }
 
 // NewMysqlRepo creates the repo
-func NewMysqlRepo(dsName, dbName, tableName string) (Repository, error) {
+func NewMysqlRepo(dsName, dbName, tableName string) (users.Repository, error) {
 	db, err := mysqlConnect(dsName, dbName)
 	if err != nil {
 		return nil, err
@@ -48,7 +49,7 @@ func mysqlConnect(dsName, dbName string) (*sql.DB, error) {
 }
 
 // Create a user
-func (r *mysqlDBRepo) Create(ctx context.Context, user *User) error {
+func (r *mysqlDBRepo) Create(ctx context.Context, user *users.User) error {
 	insertQuery := "INSERT INTO " + r.tableName +
 		"(id, email, name, age) VALUES (?, ?, ?, ?)"
 	stmt, err := r.db.PrepareContext(ctx, insertQuery)
@@ -61,8 +62,8 @@ func (r *mysqlDBRepo) Create(ctx context.Context, user *User) error {
 }
 
 // Get a user
-func (r *mysqlDBRepo) Get(ctx context.Context, id string) (*User, error) {
-	user := &User{}
+func (r *mysqlDBRepo) Get(ctx context.Context, id string) (*users.User, error) {
+	user := &users.User{}
 	selectQuery := "SELECT id, email, name, age FROM " +
 		r.tableName +
 		" WHERE id = ?"
@@ -78,8 +79,8 @@ func (r *mysqlDBRepo) Get(ctx context.Context, id string) (*User, error) {
 }
 
 // GetAll users
-func (r *mysqlDBRepo) GetAll(ctx context.Context) ([]*User, error) {
-	users := make([]*User, 0)
+func (r *mysqlDBRepo) GetAll(ctx context.Context) ([]*users.User, error) {
+	users := make([]*users.User, 0)
 	selectQuery := "SELECT id, email, name, age FROM " +
 		r.tableName
 
@@ -90,7 +91,7 @@ func (r *mysqlDBRepo) GetAll(ctx context.Context) ([]*User, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		user := &User{}
+		user := &users.User{}
 		if err := rows.Scan(
 			&user.ID, &user.Email, &user.Name, &user.Age,
 		); err != nil {
@@ -108,7 +109,7 @@ func (r *mysqlDBRepo) GetAll(ctx context.Context) ([]*User, error) {
 }
 
 // Update a user
-func (r *mysqlDBRepo) Update(ctx context.Context, id string, user *UpdateUser) error {
+func (r *mysqlDBRepo) Update(ctx context.Context, id string, user *users.UpdateUser) error {
 	updateQuery := "UPDATE " +
 		r.tableName +
 		" SET email = ?, name = ?, age = ? WHERE id = ?"

@@ -1,28 +1,29 @@
-package users
+package mongo
 
 import (
 	"context"
 	"os"
 	"time"
 
+	"github.com/marceloaguero/serverless-api/users"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// MongoDBRepo implements usecase repository
-type MongoDBRepo struct {
+// Repository implements users repository
+type repository struct {
 	db       *mongo.Database
 	collName string
 }
 
-// NewMongoRepo creates the repo
-func NewMongoRepo(dbURI, dbName, collName string) *MongoDBRepo {
+// NewRepository creates the repo
+func NewRepository(dbURI, dbName, collName string) *users.Repository {
 	db, err := mongoConnect(dbURI, dbName)
 	if err != nil {
 		os.Exit(1)
 	}
-	return &MongoDBRepo{
+	return &repository{
 		db:       db,
 		collName: collName,
 	}
@@ -50,15 +51,15 @@ func mongoConnect(dbURI, dbName string) (*mongo.Database, error) {
 }
 
 // Create a user
-func (r *MongoDBRepo) Create(ctx context.Context, user *User) error {
+func (r *repository) Create(ctx context.Context, user *users.User) error {
 	userColl := r.db.Collection(r.collName)
 	_, err := userColl.InsertOne(ctx, user)
 	return err
 }
 
 // Get a user
-func (r *MongoDBRepo) Get(ctx context.Context, id string) (*User, error) {
-	user := &User{}
+func (r *repository) Get(ctx context.Context, id string) (*users.User, error) {
+	user := &users.User{}
 	userColl := r.db.Collection(r.collName)
 	filter := bson.M{"id": id}
 
@@ -71,9 +72,9 @@ func (r *MongoDBRepo) Get(ctx context.Context, id string) (*User, error) {
 }
 
 // GetAll users
-func (r *MongoDBRepo) GetAll(ctx context.Context) ([]*User, error) {
-	users := make([]*User, 0)
-	user := &User{}
+func (r *repository) GetAll(ctx context.Context) ([]*users.User, error) {
+	users := make([]*users.User, 0)
+	user := &users.User{}
 	userColl := r.db.Collection(r.collName)
 
 	cur, err := userColl.Find(ctx, bson.D{})
@@ -93,7 +94,7 @@ func (r *MongoDBRepo) GetAll(ctx context.Context) ([]*User, error) {
 }
 
 // Update a user
-func (r *MongoDBRepo) Update(ctx context.Context, id string, user *UpdateUser) error {
+func (r *repository) Update(ctx context.Context, id string, user *users.UpdateUser) error {
 	userColl := r.db.Collection(r.collName)
 	filter := bson.M{"id": id}
 	_, err := userColl.ReplaceOne(ctx, filter, user)
@@ -104,7 +105,7 @@ func (r *MongoDBRepo) Update(ctx context.Context, id string, user *UpdateUser) e
 }
 
 // Delete a user
-func (r *MongoDBRepo) Delete(ctx context.Context, id string) error {
+func (r *repository) Delete(ctx context.Context, id string) error {
 	userColl := r.db.Collection(r.collName)
 	filter := bson.M{"id": id}
 	_, err := userColl.DeleteOne(ctx, filter)

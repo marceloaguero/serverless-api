@@ -2,6 +2,8 @@ package users
 
 import (
 	"os"
+
+	mysqlrepo "github.com/marceloaguero/serverless-api/users/repository/mysql"
 )
 
 // Init sets up an instance of this domains
@@ -12,7 +14,8 @@ func Init() (Usecase, error) {
 	tableName := os.Getenv("TABLE_NAME")
 
 	// repository := NewMongoRepo(dbURI, dbName, tableName)
-	repository, err := NewMysqlRepo(dsName, dbName, tableName)
+	repository, err := mysqlrepo.NewMysqlRepo(dsName, dbName, tableName)
+	// NewMysqlRepo(dsName, dbName, tableName)
 	if err != nil {
 		return nil, err
 	}
