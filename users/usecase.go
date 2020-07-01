@@ -13,6 +13,8 @@ var (
 )
 
 // Usecase represents the user usecases
+// It shares the same interface than the entity Repository
+// plus something specific to the usecase
 type Usecase interface {
 	Repository
 }
