@@ -2,7 +2,6 @@ package mongo
 
 import (
 	"context"
-	"os"
 	"time"
 
 	"github.com/marceloaguero/serverless-api/users"
@@ -12,21 +11,22 @@ import (
 )
 
 // Repository implements users repository
-type repository struct {
+type mongoRepo struct {
 	db       *mongo.Database
 	collName string
 }
 
-// NewRepository creates the repo
-func NewRepository(dbURI, dbName, collName string) *users.Repository {
+// NewMongoRepo creates the repo
+func NewMongoRepo(dbURI, dbName, collName string) (users.Repository, error) {
 	db, err := mongoConnect(dbURI, dbName)
 	if err != nil {
-		os.Exit(1)
+		return nil, err
 	}
-	return &repository{
+
+	return &mongoRepo{
 		db:       db,
 		collName: collName,
-	}
+	}, nil
 }
 
 func mongoConnect(dbURI, dbName string) (*mongo.Database, error) {
@@ -51,29 +51,29 @@ func mongoConnect(dbURI, dbName string) (*mongo.Database, error) {
 }
 
 // Create a user
-func (r *repository) Create(ctx context.Context, user *users.User) error {
+func (r *mongoRepo) Create(ctx context.Context, user *users.User) error {
 	userColl := r.db.Collection(r.collName)
 	_, err := userColl.InsertOne(ctx, user)
 	return err
 }
 
 // Get a user
-func (r *repository) Get(ctx context.Context, id string) (*users.User, error) {
-	user := &users.User{}
+func (r *mongoRepo) Get(ctx context.Context, id string) (*users.User, error) {
+	result := users.User{}
 	userColl := r.db.Collection(r.collName)
 	filter := bson.M{"id": id}
 
-	err := userColl.FindOne(ctx, filter).Decode(&user)
+	err := userColl.FindOne(ctx, filter).Decode(&result)
 	if err != nil {
 		return nil, err
 	}
 
-	return user, nil
+	return &result, nil
 }
 
 // GetAll users
-func (r *repository) GetAll(ctx context.Context) ([]*users.User, error) {
-	users := make([]*users.User, 0)
+func (r *mongoRepo) GetAll(ctx context.Context) ([]*users.User, error) {
+	result := make([]*users.User, 0)
 	user := &users.User{}
 	userColl := r.db.Collection(r.collName)
 
@@ -88,13 +88,13 @@ func (r *repository) GetAll(ctx context.Context) ([]*users.User, error) {
 		if err != nil {
 			return nil, err
 		}
-		users = append(users, user)
+		result = append(result, user)
 	}
-	return users, nil
+	return result, nil
 }
 
 // Update a user
-func (r *repository) Update(ctx context.Context, id string, user *users.UpdateUser) error {
+func (r *mongoRepo) Update(ctx context.Context, id string, user *users.UpdateUser) error {
 	userColl := r.db.Collection(r.collName)
 	filter := bson.M{"id": id}
 	_, err := userColl.ReplaceOne(ctx, filter, user)
@@ -105,7 +105,7 @@ func (r *repository) Update(ctx context.Context, id string, user *users.UpdateUs
 }
 
 // Delete a user
-func (r *repository) Delete(ctx context.Context, id string) error {
+func (r *mongoRepo) Delete(ctx context.Context, id string) error {
 	userColl := r.db.Collection(r.collName)
 	filter := bson.M{"id": id}
 	_, err := userColl.DeleteOne(ctx, filter)

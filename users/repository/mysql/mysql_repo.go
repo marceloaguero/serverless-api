@@ -14,7 +14,7 @@ import (
 const timeout = time.Second * 5
 
 // MysqlDBRepo implements usecase repository
-type mysqlDBRepo struct {
+type mysqlRepo struct {
 	db        *sql.DB
 	tableName string
 }
@@ -26,7 +26,7 @@ func NewMysqlRepo(dsName, dbName, tableName string) (users.Repository, error) {
 		return nil, err
 	}
 
-	return &mysqlDBRepo{
+	return &mysqlRepo{
 		db:        db,
 		tableName: tableName,
 	}, nil
@@ -49,7 +49,7 @@ func mysqlConnect(dsName, dbName string) (*sql.DB, error) {
 }
 
 // Create a user
-func (r *mysqlDBRepo) Create(ctx context.Context, user *users.User) error {
+func (r *mysqlRepo) Create(ctx context.Context, user *users.User) error {
 	insertQuery := "INSERT INTO " + r.tableName +
 		"(id, email, name, age) VALUES (?, ?, ?, ?)"
 	stmt, err := r.db.PrepareContext(ctx, insertQuery)
@@ -62,25 +62,25 @@ func (r *mysqlDBRepo) Create(ctx context.Context, user *users.User) error {
 }
 
 // Get a user
-func (r *mysqlDBRepo) Get(ctx context.Context, id string) (*users.User, error) {
-	user := &users.User{}
+func (r *mysqlRepo) Get(ctx context.Context, id string) (*users.User, error) {
+	result := users.User{}
 	selectQuery := "SELECT id, email, name, age FROM " +
 		r.tableName +
 		" WHERE id = ?"
 
 	err := r.db.QueryRowContext(ctx, selectQuery, id).Scan(
-		&user.ID, &user.Email, &user.Name, &user.Age,
+		result.ID, result.Email, result.Name, result.Age,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	return user, nil
+	return &result, nil
 }
 
 // GetAll users
-func (r *mysqlDBRepo) GetAll(ctx context.Context) ([]*users.User, error) {
-	users := make([]*users.User, 0)
+func (r *mysqlRepo) GetAll(ctx context.Context) ([]*users.User, error) {
+	result := make([]*users.User, 0)
 	selectQuery := "SELECT id, email, name, age FROM " +
 		r.tableName
 
@@ -98,18 +98,18 @@ func (r *mysqlDBRepo) GetAll(ctx context.Context) ([]*users.User, error) {
 			return nil, err
 		}
 
-		users = append(users, user)
+		result = append(result, user)
 
 		if err := rows.Err(); err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	return users, nil
+	return result, nil
 }
 
 // Update a user
-func (r *mysqlDBRepo) Update(ctx context.Context, id string, user *users.UpdateUser) error {
+func (r *mysqlRepo) Update(ctx context.Context, id string, user *users.UpdateUser) error {
 	updateQuery := "UPDATE " +
 		r.tableName +
 		" SET email = ?, name = ?, age = ? WHERE id = ?"
@@ -123,7 +123,7 @@ func (r *mysqlDBRepo) Update(ctx context.Context, id string, user *users.UpdateU
 }
 
 // Delete a user
-func (r *mysqlDBRepo) Delete(ctx context.Context, id string) error {
+func (r *mysqlRepo) Delete(ctx context.Context, id string) error {
 	deleteQuery := "DELETE FROM " +
 		r.tableName +
 		" WHERE id = ?"
