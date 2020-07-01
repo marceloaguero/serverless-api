@@ -16,9 +16,7 @@ func main() {
 	dbName := os.Getenv("DB_NAME")
 	tableName := os.Getenv("TABLE_NAME")
 
-	// repository := NewMongoRepo(dbURI, dbName, tableName)
 	repository, err := mysqlrepo.NewMysqlRepo(dsName, dbName, tableName)
-	// NewMysqlRepo(dsName, dbName, tableName)
 	if err != nil {
 		log.Panic(err)
 	}

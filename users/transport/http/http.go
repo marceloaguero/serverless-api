@@ -130,10 +130,6 @@ func (d *delivery) Delete(w http.ResponseWriter, r *http.Request) {
 
 // Routes -
 func Routes(usecase users.Usecase) (*mux.Router, error) {
-	// usecase, err := users.Init()
-	// if err != nil {
-	// 	log.Panic(err)
-	// }
 
 	delivery := newDelivery(usecase)
 
