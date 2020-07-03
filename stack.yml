@@ -10,6 +10,6 @@ functions:
     build_args:
       GO111MODULE: on
     environment:
-      DB_DSN: serverless:supersecret@tcp(mysql.db.svc.cluster.local:3306)
+      DB_DSN: serverless:supersecret@tcp(192.168.0.144:3306)
       DB_NAME: serverless
       TABLE_NAME: users
