@@ -7,3 +7,9 @@ functions:
     lang: golang-middleware
     handler: ./users/transport/openfaas
     image: marceloaguero/serverless-api:latest
+    build_args:
+      GO111MODULE: on
+    environment:
+      DB_DSN: serverless:supersecret@tcp(mysql.db.svc.cluster.local:3306)
+      DB_NAME: serverless
+      TABLE_NAME: users
