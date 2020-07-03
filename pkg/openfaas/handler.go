@@ -22,7 +22,7 @@ func init() {
 	}
 
 	usecase := users.NewUsecase(repository)
-	fmt.Println(usecase)
+	// fmt.Println(usecase)
 }
 
 // Handle is the input point in openfaas
