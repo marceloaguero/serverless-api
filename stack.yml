@@ -3,7 +3,7 @@ provider:
   name: openfaas
   gateway: http://127.0.0.1:8080
 functions:
-  openfaas:
+  serverless-api:
     lang: golang-middleware
     handler: ./users/transport/openfaas
     image: marceloaguero/serverless-api:latest
