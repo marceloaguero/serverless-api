@@ -12,7 +12,6 @@ import (
 )
 
 func init() {
-	port := os.Getenv("PORT")
 	dsName := os.Getenv("DB_DSN")
 	dbName := os.Getenv("DB_NAME")
 	tableName := os.Getenv("TABLE_NAME")
