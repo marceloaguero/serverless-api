@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/marceloaguero/serverless-api/users"
-	transport "github.com/marceloaguero/serverless-api/users/delivery"
+	router "github.com/marceloaguero/serverless-api/users/delivery"
 	mysqlrepo "github.com/marceloaguero/serverless-api/users/repository/mysql"
 )
 
@@ -23,7 +23,7 @@ func main() {
 	}
 
 	usecase := users.NewUsecase(repository)
-	router, err := transport.Routes(usecase, pathPrefix)
+	router, err := router.Routes(usecase, pathPrefix)
 	if err != nil {
 		log.Panic(err)
 	}
