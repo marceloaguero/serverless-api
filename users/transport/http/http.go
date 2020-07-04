@@ -129,16 +129,16 @@ func (d *delivery) Delete(w http.ResponseWriter, r *http.Request) {
 }
 
 // Routes -
-func Routes(usecase users.Usecase) (*mux.Router, error) {
+func Routes(usecase users.Usecase, pathPrefix string) (*mux.Router, error) {
 
 	delivery := newDelivery(usecase)
 
 	r := mux.NewRouter()
-	r.HandleFunc("/users", delivery.Create).Methods("POST")
-	r.HandleFunc("/users/{id}", delivery.Get).Methods("GET")
-	r.HandleFunc("/users", delivery.GetAll).Methods("GET")
-	r.HandleFunc("/users/{id}", delivery.Update).Methods("PUT")
-	r.HandleFunc("/users/{id}", delivery.Delete).Methods("DELETE")
+	r.HandleFunc(pathPrefix+"users", delivery.Create).Methods("POST")
+	r.HandleFunc(pathPrefix+"users/{id}", delivery.Get).Methods("GET")
+	r.HandleFunc(pathPrefix+"users", delivery.GetAll).Methods("GET")
+	r.HandleFunc(pathPrefix+"users/{id}", delivery.Update).Methods("PUT")
+	r.HandleFunc(pathPrefix+"users/{id}", delivery.Delete).Methods("DELETE")
 
 	return r, nil
 }

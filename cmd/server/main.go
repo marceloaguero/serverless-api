@@ -15,6 +15,7 @@ func main() {
 	dsName := os.Getenv("DB_DSN")
 	dbName := os.Getenv("DB_NAME")
 	tableName := os.Getenv("TABLE_NAME")
+	pathPrefix := "/function/serverless-api/"
 
 	repository, err := mysqlrepo.NewMysqlRepo(dsName, dbName, tableName)
 	if err != nil {
@@ -22,7 +23,7 @@ func main() {
 	}
 
 	usecase := users.NewUsecase(repository)
-	router, err := transport.Routes(usecase)
+	router, err := transport.Routes(usecase, pathPrefix)
 	if err != nil {
 		log.Panic(err)
 	}
