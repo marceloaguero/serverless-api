@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"github.com/marceloaguero/serverless-api/users"
+	transport "github.com/marceloaguero/serverless-api/users/delivery"
 	mysqlrepo "github.com/marceloaguero/serverless-api/users/repository/mysql"
-	transport "github.com/marceloaguero/serverless-api/users/transport/http"
 )
 
 func main() {
